@@ -1,0 +1,70 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Videni\Bundle\LinkRelationBundle\Serializer\Hal\RelationItemNormalizer:
+        arguments:
+            - '@api_platform.hal.normalizer.item'
+        calls:
+            - method: setLinksFactory
+              arguments:
+                - '@Videni\Bundle\LinkRelationBundle\Factory\LinksFactory'
+        tags:
+            - { name: 'serializer.normalizer', priority: 50}
+
+    videni.configuration.metadata.file_locator:
+        class: Metadata\Driver\FileLocator
+        arguments:
+            - []
+
+    videni.configuration.metadata.cache.file_cache:
+        class: Metadata\Cache\FileCache
+
+    videni.configuration.metadata_factory:
+        class: Metadata\MetadataFactory
+        arguments:
+            - '@videni.configuration.metadata.chain_driver'
+            - 'Metadata\ClassHierarchyMetadata'
+            - '%kernel.debug%'
+        calls:
+            - [ setCache, [ '@videni.configuration.metadata.cache.file_cache' ] ]
+
+    videni.configuration.relations_repository:
+        class: Hateoas\Configuration\RelationsRepository
+        arguments:
+            - '@videni.configuration.metadata_factory'
+            - '@videni.configuration.relation_provider'
+
+    videni.configuration.metadata.chain_driver:
+        class: Metadata\Driver\DriverChain
+        arguments:
+            - ['@videni.configuration.metadata.yaml_driver', '@videni.configuration.metadata.xml_driver', '@hateoas.configuration.metadata.extension_driver']
+
+    videni.configuration.relation_provider:
+        class: Hateoas\Configuration\Provider\RelationProvider
+        arguments:
+            - '@videni.configuration.metadata_factory'
+            - '@hateoas.configuration.provider.resolver'
+
+    videni.configuration.metadata.yaml_driver:
+        class: Hateoas\Configuration\Metadata\Driver\YamlDriver
+        arguments:
+            - '@videni.configuration.metadata.file_locator'
+
+    videni.configuration.metadata.xml_driver:
+        class: Hateoas\Configuration\Metadata\Driver\XmlDriver
+        arguments:
+            - '@videni.configuration.metadata.file_locator'
+
+    Videni\Bundle\LinkRelationBundle\Factory\LinksFactory:
+        arguments:
+            - '@videni.configuration.relations_repository'
+            - '@hateoas.link_factory'
+            - '@videni.serializer.exclusion_manager'
+
+    videni.serializer.exclusion_manager:
+        class: Videni\Bundle\LinkRelationBundle\Serializer\ExclusionManager
+        arguments:
+            - '@hateoas.expression.evaluator'
