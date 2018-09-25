@@ -4,16 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    Videni\Bundle\LinkRelationBundle\Serializer\Hal\RelationItemNormalizer:
-        arguments:
-            - '@api_platform.hal.normalizer.item'
-        calls:
-            - method: setLinksFactory
-              arguments:
-                - '@Videni\Bundle\LinkRelationBundle\Factory\LinksFactory'
-        tags:
-            - { name: 'serializer.normalizer', priority: 50}
-
     videni.configuration.metadata.file_locator:
         class: Metadata\Driver\FileLocator
         arguments:
@@ -68,3 +58,23 @@ services:
         class: Videni\Bundle\LinkRelationBundle\Serializer\ExclusionManager
         arguments:
             - '@hateoas.expression.evaluator'
+
+    Videni\Bundle\LinkRelationBundle\Serializer\Hal\RelationItemNormalizer:
+        arguments:
+            - '@api_platform.hal.normalizer.item'
+        calls:
+            - method: setLinksFactory
+              arguments:
+                - '@Videni\Bundle\LinkRelationBundle\Factory\LinksFactory'
+        tags:
+            - { name: 'serializer.normalizer', priority: 50}
+
+    Videni\Bundle\LinkRelationBundle\Serializer\Hal\RelationCollectionNormalizer:
+        arguments:
+            - '@api_platform.hal.normalizer.collection'
+        calls:
+            - method: setLinksFactory
+              arguments:
+                - '@Videni\Bundle\LinkRelationBundle\Factory\LinksFactory'
+        tags:
+            - { name: 'serializer.normalizer', priority: 17}
