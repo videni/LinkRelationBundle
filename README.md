@@ -69,6 +69,55 @@ ApiPlatform\Core\Bridge\Doctrine\Orm\Paginator:
             groups: ['OrderCollection']
             exclude_if:  expr(is_granted('app_order_create') === false)
 ```
+
+# An example response for collection
+```json
+{
+    "_links": {
+        "self": {
+            "href": "/api/admin/orders"
+        },
+        "item": [
+            {
+                "href": "/api/admin/orders/338"
+            }
+        ],
+        "create": {
+            "href": "/api/admin/orders"
+        }
+    },
+    "totalItems": 1,
+    "itemsPerPage": 30,
+    "_embedded": {
+        "item": [
+            {
+                "_links": {
+                    "self": {
+                        "href": "/api/admin/orders/338"
+                    },
+                    "view": {
+                        "href": "/api/admin/orders/338"
+                    },
+                    "edit": {
+                        "href": "/api/admin/orders/338"
+                    },
+                    "delete": {
+                        "href": "/api/admin/orders/338"
+                    }
+                },
+                "id": 338,
+                "number": "0b13e52d-b058-32fb-8507-10dec634a07c",
+                "items": [],
+                "items_total": 0,
+                "adjustments": [],
+                "adjustments_total": 0,
+                "total": 0,
+                "state": "fulfilled"
+            }
+        ]
+    }
+}
+```
 # Todo
 
 1. support json-ld
